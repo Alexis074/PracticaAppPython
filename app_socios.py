@@ -48,7 +48,6 @@ socios = [
     {"n": 34, "nombre": "Clinica Veterinaria Vet-Ser", "ruc": "3.415.497-2", "dia": 26, "monto": 30000},
     {"n": 35, "nombre": "Mario Gustavo Insaurralde", "ruc": "750.759-3", "dia": 26, "monto": 50000},
     {"n": 36, "nombre": "Distribuidora FW E.A.S", "ruc": "80.155.279-6", "dia": 26, "monto": 100000},
-    {"n": 37, "nombre": "Distribuidora Dos Hermanos", "ruc": "82.115.459-6", "dia": 26, "monto": 100000},
 ]
 
 
@@ -158,3 +157,7 @@ class App(ctk.CTk):
 if __name__ == "__main__":
     app = App()
     app.mainloop()
+
+# ---------------------------
+# ALEXIS ALMIRON - 2025
+# ---------------------------
