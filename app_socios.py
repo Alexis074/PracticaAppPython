@@ -68,17 +68,15 @@ class App(ctk.CTk):
         self.crear_pantalla_principal()
 
     # ---------------------------
-    # FUNCIÓN PARA MOSTRAR LA FECHA ACTUAL
+    # FUNCIÓN PARA MOSTRAR LA FECHA ACTUAL (formato 05-11-2025)
     # ---------------------------
     def mostrar_fecha_actual(self):
-        meses_es = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio",
-                    "Agosto","Septiembre","Octubre","Noviembre","Diciembre"]
-        dias_semana = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"]
         ahora = datetime.now()
-        fecha_texto = f"{dias_semana[ahora.weekday()]}, {ahora.day} de {meses_es[ahora.month-1]} de {ahora.year}"
-
-        etiqueta_fecha = ctk.CTkLabel(self, text=fecha_texto, font=("Segoe UI", 28, "bold"), text_color="#FFD700")
-        etiqueta_fecha.place(x=20, y=20)  # esquina superior izquierda
+        fecha_texto = ahora.strftime("%d-%m-%Y")  # formato de factura
+        etiqueta_fecha = ctk.CTkLabel(self, text=fecha_texto,
+                                      font=("Segoe UI", 38, "bold"),
+                                      text_color="#FF0000")
+        etiqueta_fecha.place(x=20, y=20)
 
     # ---------------------------
     # PANTALLA PRINCIPAL
@@ -87,10 +85,9 @@ class App(ctk.CTk):
         for widget in self.winfo_children():
             widget.destroy()
 
-        # Mostrar fecha actual arriba a la izquierda
         self.mostrar_fecha_actual()
-
-        ctk.CTkLabel(self, text="Seleccionar grupo de día", font=("Segoe UI", 36, "bold")).pack(pady=80)
+        ctk.CTkLabel(self, text="Seleccionar grupo de día",
+                     font=("Segoe UI", 36, "bold")).pack(pady=80)
 
         for dia in sorted(set(s["dia"] for s in socios)):
             total = sum(s["monto"] for s in socios if s["dia"] == dia)
@@ -98,14 +95,15 @@ class App(ctk.CTk):
             frame = ctk.CTkFrame(self)
             frame.pack(pady=15)
 
-            btn = ctk.CTkButton(frame, text=f"Grupo Día {dia}", width=300, height=70,
+            btn = ctk.CTkButton(frame, text=f"Grupo Día {dia}",
+                                width=300, height=70,
                                 font=("Segoe UI", 24, "bold"),
                                 command=lambda d=dia: self.mostrar_socios(d))
             btn.pack(side="left", padx=10)
 
             ctk.CTkLabel(frame, text=f"Total a recaudar: {total:,} Gs.",
-                        font=("Segoe UI", 20),
-                        text_color="#00BFFF").pack(side="left", padx=10)
+                         font=("Segoe UI", 20),
+                         text_color="#00BFFF").pack(side="left", padx=10)
 
     # ---------------------------
     # MOSTRAR SOCIOS UNO POR UNO
@@ -120,44 +118,43 @@ class App(ctk.CTk):
         for widget in self.winfo_children():
             widget.destroy()
 
-        # Mostrar fecha actual en la esquina superior izquierda
         self.mostrar_fecha_actual()
-
         socio = self.socios_filtrados[self.indice]
 
         ctk.CTkLabel(self, text=f"Socio {self.indice + 1} de {len(self.socios_filtrados)}",
-                        font=("Segoe UI", 20, "italic")).pack(pady=(60, 5))
+                     font=("Segoe UI", 20, "italic")).pack(pady=(60, 5))
         ctk.CTkLabel(self, text=f"N° {socio['n']}", font=("Segoe UI", 32, "bold")).pack(pady=(10, 0))
-        ctk.CTkLabel(self, text=f"{socio['nombre']}", font=("Segoe UI", 30, "bold"), wraplength=1000).pack(pady=15)
+        ctk.CTkLabel(self, text=f"{socio['nombre']}", font=("Segoe UI", 30, "bold"),
+                     wraplength=1000).pack(pady=15)
         ctk.CTkLabel(self, text=f"RUC: {socio['ruc']}", font=("Segoe UI", 26)).pack(pady=5)
         ctk.CTkLabel(self, text=f"Día: {socio['dia']}", font=("Segoe UI", 26)).pack(pady=5)
         ctk.CTkLabel(self, text=f"Monto: {socio['monto']:,} Gs", font=("Segoe UI", 32, "bold"),
-                        text_color="#00BFFF").pack(pady=25)
+                     text_color="#00BFFF").pack(pady=25)
 
         # Aviso especial
         nombres_con_aviso = {"D.A. S.R.L.", "Cooperativa Universitaria Ltda."}
         if socio["nombre"] in nombres_con_aviso:
-            meses_es = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"]
-            mes_actual = meses_es[datetime.now().month - 1]
+            mes_actual = datetime.now().strftime("%B").capitalize()
             texto_aviso = f"Aporte Voluntario del Mes de {mes_actual} — POR FAVOR INCLUIR EL MES EN LETRAS"
-            ctk.CTkLabel(self, text=texto_aviso, font=("Segoe UI", 18, "bold"),
-                            text_color="#FF3333").pack(pady=(0,20))
+            ctk.CTkLabel(self, text=texto_aviso,
+                         font=("Segoe UI", 18, "bold"),
+                         text_color="#FF3333").pack(pady=(0, 20))
 
         # Botones de navegación
         frame_botones = ctk.CTkFrame(self)
         frame_botones.pack(pady=30)
 
         ctk.CTkButton(frame_botones, text="⬅️ Anterior", width=200, height=60,
-                        font=("Segoe UI", 20, "bold"),
-                        command=self.anterior).grid(row=0, column=0, padx=20)
+                      font=("Segoe UI", 20, "bold"),
+                      command=self.anterior).grid(row=0, column=0, padx=20)
         ctk.CTkButton(frame_botones, text="➡️ Siguiente", width=200, height=60,
-                        font=("Segoe UI", 20, "bold"),
-                        command=self.siguiente).grid(row=0, column=1, padx=20)
+                      font=("Segoe UI", 20, "bold"),
+                      command=self.siguiente).grid(row=0, column=1, padx=20)
 
         ctk.CTkButton(self, text="↩️ Volver al Menú", width=300, height=60,
-                        font=("Segoe UI", 20, "bold"),
-                        fg_color="#333333", hover_color="#555555",
-                        command=self.crear_pantalla_principal).pack(pady=20)
+                      font=("Segoe UI", 20, "bold"),
+                      fg_color="#333333", hover_color="#555555",
+                      command=self.crear_pantalla_principal).pack(pady=20)
 
     def siguiente(self):
         if self.indice < len(self.socios_filtrados) - 1:
