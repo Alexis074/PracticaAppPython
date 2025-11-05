@@ -58,7 +58,7 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("Socios Protectores")
-        self.geometry("1200x700")  # ventana grande
+        self.geometry("1200x700")
         self.resizable(True, True)
 
         self.dia_actual = None
@@ -67,33 +67,49 @@ class App(ctk.CTk):
 
         self.crear_pantalla_principal()
 
-    # Pantalla inicial para elegir día
+    # ---------------------------
+    # FUNCIÓN PARA MOSTRAR LA FECHA ACTUAL
+    # ---------------------------
+    def mostrar_fecha_actual(self):
+        meses_es = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio",
+                    "Agosto","Septiembre","Octubre","Noviembre","Diciembre"]
+        dias_semana = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"]
+        ahora = datetime.now()
+        fecha_texto = f"{dias_semana[ahora.weekday()]}, {ahora.day} de {meses_es[ahora.month-1]} de {ahora.year}"
+
+        etiqueta_fecha = ctk.CTkLabel(self, text=fecha_texto, font=("Segoe UI", 28, "bold"), text_color="#FFD700")
+        etiqueta_fecha.place(x=20, y=20)  # esquina superior izquierda
+
+    # ---------------------------
+    # PANTALLA PRINCIPAL
+    # ---------------------------
     def crear_pantalla_principal(self):
         for widget in self.winfo_children():
             widget.destroy()
 
-        ctk.CTkLabel(self, text="Seleccionar grupo de día", font=("Segoe UI", 36, "bold")).pack(pady=50)
+        # Mostrar fecha actual arriba a la izquierda
+        self.mostrar_fecha_actual()
+
+        ctk.CTkLabel(self, text="Seleccionar grupo de día", font=("Segoe UI", 36, "bold")).pack(pady=80)
 
         for dia in sorted(set(s["dia"] for s in socios)):
-            # Calcular el total para este día
             total = sum(s["monto"] for s in socios if s["dia"] == dia)
-            
-            # Crear frame para contener botón y etiqueta
+
             frame = ctk.CTkFrame(self)
             frame.pack(pady=15)
-            
-            # Botón del grupo
+
             btn = ctk.CTkButton(frame, text=f"Grupo Día {dia}", width=300, height=70,
                                 font=("Segoe UI", 24, "bold"),
                                 command=lambda d=dia: self.mostrar_socios(d))
             btn.pack(side="left", padx=10)
-            
-            # Etiqueta con el total
+
             ctk.CTkLabel(frame, text=f"Total a recaudar: {total:,} Gs.",
                         font=("Segoe UI", 20),
                         text_color="#00BFFF").pack(side="left", padx=10)
 
-    # Mostrar lista de socios (uno por uno)
+    # ---------------------------
+    # MOSTRAR SOCIOS UNO POR UNO
+    # ---------------------------
     def mostrar_socios(self, dia):
         self.dia_actual = dia
         self.socios_filtrados = [s for s in socios if s["dia"] == dia]
@@ -104,10 +120,13 @@ class App(ctk.CTk):
         for widget in self.winfo_children():
             widget.destroy()
 
+        # Mostrar fecha actual en la esquina superior izquierda
+        self.mostrar_fecha_actual()
+
         socio = self.socios_filtrados[self.indice]
 
         ctk.CTkLabel(self, text=f"Socio {self.indice + 1} de {len(self.socios_filtrados)}",
-                        font=("Segoe UI", 20, "italic")).pack(pady=(20, 5))
+                        font=("Segoe UI", 20, "italic")).pack(pady=(60, 5))
         ctk.CTkLabel(self, text=f"N° {socio['n']}", font=("Segoe UI", 32, "bold")).pack(pady=(10, 0))
         ctk.CTkLabel(self, text=f"{socio['nombre']}", font=("Segoe UI", 30, "bold"), wraplength=1000).pack(pady=15)
         ctk.CTkLabel(self, text=f"RUC: {socio['ruc']}", font=("Segoe UI", 26)).pack(pady=5)
@@ -115,12 +134,12 @@ class App(ctk.CTk):
         ctk.CTkLabel(self, text=f"Monto: {socio['monto']:,} Gs", font=("Segoe UI", 32, "bold"),
                         text_color="#00BFFF").pack(pady=25)
 
-        # Aviso especial para D.A. S.R.L. y Cooperativa Universitaria Ltda.
+        # Aviso especial
         nombres_con_aviso = {"D.A. S.R.L.", "Cooperativa Universitaria Ltda."}
         if socio["nombre"] in nombres_con_aviso:
             meses_es = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"]
             mes_actual = meses_es[datetime.now().month - 1]
-            texto_aviso = f'Aporte Voluntario del Mes de {mes_actual} — POR FAVOR INCLUIR EL MES EN LETRAS'
+            texto_aviso = f"Aporte Voluntario del Mes de {mes_actual} — POR FAVOR INCLUIR EL MES EN LETRAS"
             ctk.CTkLabel(self, text=texto_aviso, font=("Segoe UI", 18, "bold"),
                             text_color="#FF3333").pack(pady=(0,20))
 
